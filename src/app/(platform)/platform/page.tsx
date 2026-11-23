@@ -1,0 +1,6 @@
+import { Building2, CircleDollarSign, Database, TriangleAlert } from "lucide-react";
+
+export default function PlatformDashboard() {
+  const stats = [["Active laboratories","12",Building2],["Monthly revenue","Rs. 2.4M",CircleDollarSign],["Storage used","68 GB",Database],["Open alerts","2",TriangleAlert]];
+  return <main className="min-h-screen bg-[#061519] p-4 text-[#E8F6F5] lg:p-8"><div className="mx-auto max-w-7xl"><header className="flex items-center justify-between"><div><p className="text-sm text-[#9FB8BC]">Platform overview</p><h1 className="mt-1 font-heading text-3xl font-bold">LabCore Operations</h1></div><button className="brand-gradient h-11 rounded-lg px-4 text-sm font-bold text-[#04222A]">Add laboratory</button></header><section className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{stats.map(([label,value,Icon]) => { const IconComponent = Icon as typeof Building2; return <article key={String(label)} className="rounded-xl border border-[#1A4250] bg-[#0B2229] p-5"><div className="flex justify-between"><p className="text-sm text-[#9FB8BC]">{String(label)}</p><IconComponent size={20} className="text-[#2DD4BF]" /></div><p className="mono mt-3 text-2xl font-bold">{String(value)}</p></article>; })}</section></div></main>;
+}
