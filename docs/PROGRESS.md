@@ -9,6 +9,7 @@
 - Added an optional isolated Next.js build directory so production builds can be checked without sharing the running development server's `.next` directory.
 - Replaced placeholder forgot/reset password screens with Supabase Auth reset-link and password-update flows.
 - Added tenant-scoped low-stock reagents to the dashboard and workspace notification menu.
+- Updated PWA branding to reuse the existing tracked LabCore SVG and documented migration 016.
 
 ## Current validation
 
@@ -19,11 +20,9 @@
 
 ## Remaining
 
-1. Implement password recovery and password setup for invited users.
-2. Complete first-lab administrator invitation in Create Lab and preserve permission/audit checks.
-3. Connect the notification bell and low-stock alerts to tenant-scoped inventory data.
-4. Fix the Next.js prerender date warning, theme consistency, and missing PWA icon references while preserving the existing logo.
-5. Recheck all routes, add or extend focused tests, update the README/database/security documentation, and run final checks.
-6. Commit each completed task and push `main` to `origin` only after final validation.
+1. Run Docker/local Supabase and execute pgTAP tenant-isolation tests.
+2. Complete final route smoke review and visual consistency checks while preserving the existing logo.
+3. Run the final lint, typecheck, build, test attempt, secret scan, and Git status review.
+4. Push `main` to `origin` and report the commit link plus setup decisions.
 
 No existing migration has been edited. Any required schema changes start at `202611260016`.

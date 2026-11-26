@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   description: "A secure medical laboratory management platform.",
   icons: {
     icon: [{ url: "/brand/logo-mark-dark.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/brand/logo-mark-dark.svg", type: "image/svg+xml" }],
   },
 };
 

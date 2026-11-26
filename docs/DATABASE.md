@@ -21,6 +21,7 @@ In the Supabase dashboard, select the project you intend to use and open **SQL E
 13. Run `supabase/migrations/202611260013_patient_portal_signin.sql`.
 14. Run `supabase/migrations/202611260014_report_upload_scanning.sql`.
 15. Run `supabase/migrations/202611260015_retention_and_maintenance.sql`.
+16. Run `supabase/migrations/202611260016_lab_onboarding.sql`.
 16. For a development project only, run `supabase/seed.sql`.
 17. Run `supabase/tests/schema_smoke.sql`; it raises an error if core tables, RLS, booking exclusions, permission grants, audit hooks, or case-scoped report and Storage policies are missing.
 
@@ -71,6 +72,8 @@ Migration `013` adds patient-session verification and a patient-scoped published
 Migration `014` adds private report attachments with assigned-case access, a clean-scan-only registration RPC reserved for `service_role`, and a report attachment list/path RPC. Configure and deploy the `scan-report-upload` Edge Function before enabling uploads. It validates PDF/JPEG/PNG signatures and size, scans bytes before permanent storage, and fails closed if the scanner is unavailable. Configure `MALWARE_SCANNER_URL` and `MALWARE_SCANNER_API_KEY` as Edge Function secrets. The scanner endpoint must accept a raw binary POST with `Authorization: Bearer <key>` and `X-File-Mime-Type`, returning JSON `{ "status": "clean", "engine": "scanner name" }` only after a successful scan; `"infected"` rejects the file, and all other responses/errors reject without storing. Use a scanner service operated within your trusted environment; do not send patient files to an unapproved third party.
 
 Migration `015` adds laboratory retention-policy management and a service-role maintenance RPC. The scheduled cleanup expires old slot holds and removes portal-token records expired for at least 30 days, except in legal-hold labs. It does not delete patient, report, invoice, or audit records. Retention days are policy metadata only; have qualified privacy/legal staff approve a deletion schedule before adding clinical-data purges.
+
+Migration `016` adds `create_lab_with_admin`, an atomic platform-developer RPC that creates the laboratory, settings, lab administrator membership, default page grants, and an audit event. The administrator must already exist in Supabase Auth. It refuses platform developers and users who already have an active lab membership, preserving the application's single-laboratory sign-in model.
 
 ### Staff invitations
 

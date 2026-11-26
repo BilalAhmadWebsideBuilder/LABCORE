@@ -22,5 +22,6 @@
 - Membership creation and activation-token consumption are trusted-server operations.
 - Report storage must remain private; downloads require permission re-checking and short-lived signed URLs.
 - Audit records are append-only from the application role.
+- Lab creation by a platform developer can use migration `016` only for an existing Supabase Auth administrator and assigns that user a lab-scoped `lab_admin` membership and default page grants atomically.
 
 The SQL policies and staff sign-in are a foundation, not a production certification. Current result entry is plain text and does not provide clinical validation; print-to-PDF uses the user’s browser and saves no server-side PDF. Patient account provisioning/activation still requires an administrator workflow; the malware scanner service and Supabase managed backups must be configured and verified; clinical-data purge rules and full two-lab/two-patient integration tests remain incomplete. The analytics margin intentionally excludes reagent costs. Do not use real patient data until these gaps are addressed and a qualified security/clinical review is complete.

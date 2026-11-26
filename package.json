@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
+    "test": "npm run test:integration",
     "test:integration": "npx supabase test db"
   },
   "dependencies": {
