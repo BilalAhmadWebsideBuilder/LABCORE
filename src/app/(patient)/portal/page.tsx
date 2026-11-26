@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { signOut } from "@/app/actions/auth";
+import { Logo } from "@/components/brand/Logo";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const metadata = { robots: { index: false, follow: false } };
@@ -51,7 +52,7 @@ export default async function PatientPortal() {
       <section className="card mx-auto w-full max-w-3xl rounded-2xl p-6 sm:p-8">
         <header className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-sm font-bold uppercase tracking-wide text-[#0A7490]">LabCore</p>
+            <Logo variant="horizontal" theme="light" />
             <h1 className="mt-2 font-heading text-2xl font-bold">Your published reports</h1>
             <p className="mt-2 text-sm text-[#4A5A60]">Only reports published by your laboratory are shown here.</p>
           </div>

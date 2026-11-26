@@ -8,6 +8,9 @@ const jetbrains = JetBrains_Mono({ variable: "--font-mono", subsets: ["latin"] }
 export const metadata: Metadata = {
   title: "LabCore — Accurate results. Trusted care.",
   description: "A secure medical laboratory management platform.",
+  icons: {
+    icon: [{ url: "/brand/logo-mark-dark.svg", type: "image/svg+xml" }],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

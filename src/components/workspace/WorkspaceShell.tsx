@@ -26,6 +26,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { signOut } from "@/app/actions/auth";
+import { Logo } from "@/components/brand/Logo";
 
 type WorkspaceShellProps = {
   children: ReactNode;
@@ -130,8 +131,11 @@ export function WorkspaceShell({
     <div className="workspace">
       <aside className={`workspace-sidebar ${collapsed ? "is-collapsed" : "is-expanded"}`}>
         <Link className="workspace-brand" href="/lab" aria-label={`${labName} dashboard`}>
-          <span className="workspace-logo"><FlaskConical size={20} /></span>
-          {!collapsed && <span className="workspace-brand-text">LabCore</span>}
+          {collapsed ? (
+            <Logo className="workspace-brand-mark" />
+          ) : (
+            <Logo variant="horizontal" theme="dark" />
+          )}
         </Link>
         <div className="workspace-nav-label">{!collapsed && "WORKSPACE"}</div>
         <nav aria-label="Laboratory workspace">
@@ -157,6 +161,9 @@ export function WorkspaceShell({
       <div className="workspace-main">
         <header className="workspace-header">
           <div className="workspace-header-lab">
+            <Link className="workspace-header-logo" href="/lab" aria-label="LabCore dashboard">
+              <Logo theme="light" className="workspace-header-mark" />
+            </Link>
             <button
               type="button"
               className="workspace-icon-button workspace-collapse"
