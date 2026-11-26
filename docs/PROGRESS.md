@@ -11,6 +11,8 @@
 - Added tenant-scoped low-stock reagents to the dashboard and workspace notification menu.
 - Updated PWA branding to reuse the existing tracked LabCore SVG and documented migration 016.
 - Expanded the pgTAP tenant suite to 14 assertions, including staff read/write isolation in both laboratory directions and patient published-report isolation.
+- Added migration 017 to replace the PostgreSQL-incompatible trash `UNION` query after migration 008 is already applied.
+- Removed the workspace date snapshot that caused Next.js 16 prerender instability.
 
 ## Current validation
 

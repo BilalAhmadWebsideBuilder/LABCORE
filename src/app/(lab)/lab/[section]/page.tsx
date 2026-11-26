@@ -39,6 +39,7 @@ import { DatabaseSetupNotice } from "@/components/workspace/DatabaseSetupNotice"
 import { requireMembership } from "@/lib/auth/authorization";
 import { getDatabaseSetupMessage } from "@/lib/db/migration-status";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { connection } from "next/server";
 
 export const instant = false;
 
@@ -157,7 +158,11 @@ async function checkPermission(
 function setupNotice(error: { code?: string; message: string }) {
   const message = getDatabaseSetupMessage(error);
   if (message) return <DatabaseSetupNotice message={message} />;
-  throw new Error(error.message);
+  return (
+    <DatabaseSetupNotice
+      message="This workspace feature could not be loaded. Confirm the lab membership and database permissions, then try again."
+    />
+  );
 }
 
 function dateKeyInTimezone(date: Date, timeZone: string) {
@@ -187,6 +192,7 @@ function PageHeading({ section }: { section: ModuleSection }) {
 export default async function WorkspaceSectionPage({
   params,
 }: PageProps<"/lab/[section]">) {
+  await connection();
   const { section } = await params;
   if (section === "departments") redirect("/lab/tests#departments");
   if (!Object.hasOwn(moduleDefinitions, section)) notFound();

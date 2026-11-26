@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { WorkspaceShell } from "@/components/workspace/WorkspaceShell";
 import { getDatabaseSetupMessage } from "@/lib/db/migration-status";
 import { DatabaseSetupNotice } from "@/components/workspace/DatabaseSetupNotice";
+import { connection } from "next/server";
 
 export const instant = false;
 
@@ -29,6 +30,7 @@ const fallbackPageGrants: Record<string, string[]> = {
 export default async function LabWorkspaceLayout({
   children,
 }: LayoutProps<"/lab">) {
+  await connection();
   const membership = await requireMembership(LAB_DASHBOARD_ROLES);
   const supabase = await createSupabaseServerClient();
   const [

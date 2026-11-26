@@ -40,6 +40,7 @@ Apply migrations in this exact order for a fresh database:
 14. `supabase/migrations/202611260014_report_upload_scanning.sql`
 15. `supabase/migrations/202611260015_retention_and_maintenance.sql`
 16. `supabase/migrations/202611260016_lab_onboarding.sql`
+17. `supabase/migrations/202611260017_fix_trash_union.sql`
 
 See [`docs/DATABASE.md`](./docs/DATABASE.md) for migration notes, administrator setup, and the schema smoke test. Use synthetic data only in development and test projects.
 

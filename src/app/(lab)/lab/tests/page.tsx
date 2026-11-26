@@ -19,7 +19,7 @@ export default async function TestsPage() {
   if (pageAccessError) {
     const message = getDatabaseSetupMessage(pageAccessError);
     if (message) return <DatabaseSetupNotice message={message} />;
-    throw new Error(`Could not verify test catalog page access: ${pageAccessError.message}`);
+    return <DatabaseSetupNotice message="The test catalog could not be loaded. Confirm the lab permissions and migration setup, then try again." />;
   }
   if (!hasPageAccess) redirect("/lab");
   const [

@@ -72,15 +72,6 @@ function getMobileViewport() {
   return window.matchMedia(mobileViewport).matches;
 }
 
-function subscribeToDate(callback: () => void) {
-  const timer = window.setInterval(callback, 60_000);
-  return () => window.clearInterval(timer);
-}
-
-function getDateSnapshot() {
-  return new Date().toISOString().slice(0, 10);
-}
-
 export function WorkspaceShell({
   children,
   labName,
@@ -91,7 +82,7 @@ export function WorkspaceShell({
 }: WorkspaceShellProps) {
   const pathname = usePathname();
   const mobileViewportMatch = useSyncExternalStore(subscribeToViewport, getMobileViewport, () => false);
-  const currentDate = useSyncExternalStore(subscribeToDate, getDateSnapshot, () => "");
+  const [currentDate, setCurrentDate] = useState("");
   const [sidebarOverride, setSidebarOverride] = useState<boolean | null>(null);
   const [accountOpen, setAccountOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -112,6 +103,13 @@ export function WorkspaceShell({
     const useLargeText = window.localStorage.getItem("labcore-large-text") === "true";
     document.documentElement.dataset.theme = useDarkTheme ? "dark" : "light";
     document.documentElement.classList.toggle("large-text", useLargeText);
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setCurrentDate(new Date().toISOString().slice(0, 10));
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   function toggleTheme() {
