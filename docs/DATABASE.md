@@ -27,6 +27,37 @@ In the Supabase dashboard, select the project you intend to use and open **SQL E
 
 Run each migration as one script, in order, and do not rerun migrations that have already been applied. Migrations `006`–`015` extend the existing schema; they do not replace the earlier foundation or patient registration migrations. Do not apply the seed to staging or production. The seed contains synthetic patients and deliberately does not create login credentials.
 
+## Diagnose `42501` or “Database permissions” errors
+
+If the hosted app shows `Database permissions or required LabCore migrations are incomplete`, first verify migration history and critical functions in the Supabase SQL Editor:
+
+```sql
+select version, name
+from supabase_migrations.schema_migrations
+order by version desc
+limit 20;
+
+select p.proname
+from pg_proc p
+join pg_namespace n on n.oid = p.pronamespace
+where n.nspname = 'public'
+  and p.proname in (
+    'has_lab_permission',
+    'has_lab_page_access',
+    'create_lab_with_admin',
+    'get_my_patient_reports'
+  )
+order by p.proname;
+```
+
+The first result must include migrations `001`–`016` if this is a fresh project, and the second must return all four RPC names. Also verify that the signed-in Auth user has exactly one active membership:
+
+```sql
+select lab_id, role, active
+from public.memberships
+where user_id = 'YOUR_AUTH_USER_UUID';
+```
+
 ## Create the global developer account
 
 Create or invite `bilalahmad.web.dev@gmail.com` under **Authentication → Users** in the Supabase dashboard. After the user exists, run this once in SQL Editor as the project owner:

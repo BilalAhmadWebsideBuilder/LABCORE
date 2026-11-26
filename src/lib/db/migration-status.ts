@@ -13,7 +13,7 @@ export function getDatabaseSetupMessage(error: DatabaseError): string | null {
   if (!error.code || !migrationErrorCodes.has(error.code)) return null;
 
   if (error.code === "42501") {
-    return "Database permissions are incomplete. Apply the LabCore migrations in order, then check the Supabase grants.";
+    return "Database permissions or required LabCore migrations are incomplete. Apply migrations 001–016 in order, then sign in again and verify that the authenticated account has an active lab membership and role grant.";
   }
 
   return "A required LabCore database migration is not installed. Apply the migrations in order from docs/DATABASE.md.";
