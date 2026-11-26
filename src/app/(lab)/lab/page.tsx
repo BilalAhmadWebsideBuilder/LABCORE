@@ -3,12 +3,42 @@ import Link from "next/link";
 import { requireMembership } from "@/lib/auth/authorization";
 import { LAB_DASHBOARD_ROLES } from "@/lib/auth/roles";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getDatabaseSetupMessage } from "@/lib/db/migration-status";
+import { DatabaseSetupNotice } from "@/components/workspace/DatabaseSetupNotice";
+import { PageLoadErrorNotice } from "@/components/workspace/PageLoadErrorNotice";
 
 export const instant = false;
 
 export default async function LabDashboard() {
   const membership = await requireMembership(LAB_DASHBOARD_ROLES);
   const supabase = await createSupabaseServerClient();
+  const { data: hasPageAccess, error: pageAccessError } = await supabase.rpc(
+    "has_lab_page_access",
+    {
+      target_lab: membership.labId,
+      target_page: "dashboard",
+    },
+  );
+
+  if (pageAccessError) {
+    const setupMessage = getDatabaseSetupMessage(pageAccessError);
+    if (setupMessage) return <DatabaseSetupNotice message={setupMessage} />;
+    return (
+      <PageLoadErrorNotice
+        title="Dashboard unavailable"
+        message="We could not verify access to this workspace. Please try again later or contact your administrator."
+      />
+    );
+  }
+  if (!hasPageAccess) {
+    return (
+      <PageLoadErrorNotice
+        title="Dashboard access is restricted"
+        message="Your account does not have access to this page. Contact your laboratory administrator."
+      />
+    );
+  }
+
   const { data: canReadPatients, error: permissionError } = await supabase.rpc(
     "has_lab_permission",
     {
@@ -18,7 +48,14 @@ export default async function LabDashboard() {
   );
 
   if (permissionError) {
-    throw new Error(`Could not verify dashboard permissions: ${permissionError.message}`);
+    const setupMessage = getDatabaseSetupMessage(permissionError);
+    if (setupMessage) return <DatabaseSetupNotice message={setupMessage} />;
+    return (
+      <PageLoadErrorNotice
+        title="Dashboard unavailable"
+        message="We could not verify your dashboard permissions. Please try again later or contact your administrator."
+      />
+    );
   }
 
   let patientCount: number | null = null;
@@ -30,7 +67,14 @@ export default async function LabDashboard() {
       .is("deleted_at", null);
 
     if (error) {
-      throw new Error(`Could not load patient count: ${error.message}`);
+      const setupMessage = getDatabaseSetupMessage(error);
+      if (setupMessage) return <DatabaseSetupNotice message={setupMessage} />;
+      return (
+        <PageLoadErrorNotice
+          title="Dashboard unavailable"
+          message="We could not load the laboratory summary. Please try again later or contact your administrator."
+        />
+      );
     }
     patientCount = count ?? 0;
   }

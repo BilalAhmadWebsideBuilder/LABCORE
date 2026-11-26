@@ -7,6 +7,25 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 export const metadata = { robots: { index: false, follow: false } };
 export const instant = false;
 
+function ReportsUnavailable() {
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-[#F6F9FA] px-5 py-10">
+      <section className="card w-full max-w-lg rounded-2xl p-8 text-center">
+        <Logo variant="horizontal" theme="light" />
+        <h1 className="mt-4 font-heading text-2xl font-bold">Reports are temporarily unavailable</h1>
+        <p className="mt-3 text-sm text-[#4A5A60]">
+          We could not load your published reports. Please try again later or contact your laboratory.
+        </p>
+        <form action={signOut}>
+          <button className="mt-6 rounded-lg bg-[#ECFEFB] px-5 py-3 text-sm font-bold text-[#0A7490]">
+            Sign out
+          </button>
+        </form>
+      </section>
+    </main>
+  );
+}
+
 const patientReportsSchema = z.array(z.object({
   report_id: z.uuid(),
   laboratory_name: z.string(),
@@ -40,11 +59,11 @@ export default async function PatientPortal() {
 
   const { data: reports, error: reportsError } = await supabase.rpc("get_my_patient_reports");
   if (reportsError) {
-    throw new Error(`Could not load your published reports: ${reportsError.message}`);
+    return <ReportsUnavailable />;
   }
   const parsedReports = patientReportsSchema.safeParse(reports);
   if (!parsedReports.success) {
-    throw new Error("Published report data from the database is invalid.");
+    return <ReportsUnavailable />;
   }
 
   return (

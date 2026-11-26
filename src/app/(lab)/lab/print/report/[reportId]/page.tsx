@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { z } from "zod";
 import { DatabaseSetupNotice } from "@/components/workspace/DatabaseSetupNotice";
+import { PageLoadErrorNotice } from "@/components/workspace/PageLoadErrorNotice";
 import { PrintButton } from "@/components/workspace/PrintButton";
 import { requireMembership } from "@/lib/auth/authorization";
 import { LAB_DASHBOARD_ROLES } from "@/lib/auth/roles";
@@ -46,12 +47,26 @@ export default async function ReportPrintPage({
     if (error.code === "42501") notFound();
     const setupMessage = getDatabaseSetupMessage(error);
     if (setupMessage) return <DatabaseSetupNotice message={setupMessage} />;
-    throw new Error(`Could not load report for printing: ${error.message}`);
+    return (
+      <div className="public-report-page">
+        <PageLoadErrorNotice
+          title="Report printout unavailable"
+          message="We could not load this report. Please try again later or contact your laboratory administrator."
+        />
+      </div>
+    );
   }
   const parsed = reportSchema.safeParse(data);
   if (!parsed.success) {
     if (data === null) notFound();
-    throw new Error("Report print data from the database is invalid.");
+    return (
+      <div className="public-report-page">
+        <PageLoadErrorNotice
+          title="Report printout unavailable"
+          message="The report data could not be displayed. Please contact your laboratory administrator."
+        />
+      </div>
+    );
   }
 
   const { laboratory, patient, test, report } = parsed.data;

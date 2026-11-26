@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { z } from "zod";
 import { DatabaseSetupNotice } from "@/components/workspace/DatabaseSetupNotice";
+import { PageLoadErrorNotice } from "@/components/workspace/PageLoadErrorNotice";
 import { PrintButton } from "@/components/workspace/PrintButton";
 import { requireMembership } from "@/lib/auth/authorization";
 import { LAB_DASHBOARD_ROLES } from "@/lib/auth/roles";
@@ -61,12 +62,26 @@ export default async function InvoicePrintPage({
     if (error.code === "42501") notFound();
     const setupMessage = getDatabaseSetupMessage(error);
     if (setupMessage) return <DatabaseSetupNotice message={setupMessage} />;
-    throw new Error(`Could not load invoice for printing: ${error.message}`);
+    return (
+      <div className="public-report-page">
+        <PageLoadErrorNotice
+          title="Invoice printout unavailable"
+          message="We could not load this invoice. Please try again later or contact your laboratory administrator."
+        />
+      </div>
+    );
   }
   const parsed = invoiceSchema.safeParse(data);
   if (!parsed.success) {
     if (data === null) notFound();
-    throw new Error("Invoice print data from the database is invalid.");
+    return (
+      <div className="public-report-page">
+        <PageLoadErrorNotice
+          title="Invoice printout unavailable"
+          message="The invoice data could not be displayed. Please contact your laboratory administrator."
+        />
+      </div>
+    );
   }
 
   const { laboratory, patient, invoice, items, payments } = parsed.data;
