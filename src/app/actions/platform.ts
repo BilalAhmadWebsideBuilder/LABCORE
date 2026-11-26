@@ -37,12 +37,18 @@ export async function createLab(
   const slugValue = formData.get("slug");
   const currencyValue = formData.get("currency");
   const timezoneValue = formData.get("timezone");
+  const adminNameValue = formData.get("adminName");
+  const adminEmailValue = formData.get("adminEmail");
 
   const name = typeof nameValue === "string" ? nameValue.trim() : "";
   const slug = typeof slugValue === "string" ? slugValue.trim() : "";
   const currency =
     typeof currencyValue === "string" ? currencyValue.trim().toUpperCase() : "";
   const timezone = typeof timezoneValue === "string" ? timezoneValue.trim() : "";
+  const adminName =
+    typeof adminNameValue === "string" ? adminNameValue.trim() : "";
+  const adminEmail =
+    typeof adminEmailValue === "string" ? adminEmailValue.trim().toLowerCase() : "";
 
   if (name.length < 2 || name.length > 120) {
     return { error: "Lab name must be between 2 and 120 characters.", success: null };
@@ -62,12 +68,20 @@ export async function createLab(
   if (timezone.length === 0) {
     return { error: "Enter a valid timezone, such as Asia/Karachi.", success: null };
   }
+  if (adminName.length < 2 || adminName.length > 120) {
+    return { error: "Enter the laboratory administrator name.", success: null };
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(adminEmail)) {
+    return { error: "Enter a valid laboratory administrator email.", success: null };
+  }
 
-  const { error } = await supabase.rpc("create_lab", {
+  const { error } = await supabase.rpc("create_lab_with_admin", {
     p_name: name,
     p_slug: slug,
     p_currency: currency,
     p_timezone: timezone,
+    p_admin_email: adminEmail,
+    p_admin_full_name: adminName,
   });
 
   if (error) {
@@ -77,6 +91,13 @@ export async function createLab(
 
     if (error.code === "22023") {
       return { error: error.message, success: null };
+    }
+    if (error.code === "P0002") {
+      return {
+        error:
+          "Create this administrator in Supabase Authentication first, then create the laboratory again.",
+        success: null,
+      };
     }
 
     console.error("Could not create lab:", error);

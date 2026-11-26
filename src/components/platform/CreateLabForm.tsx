@@ -64,6 +64,27 @@ export function CreateLabForm() {
           placeholder="Asia/Karachi"
         />
       </label>
+      <label className="text-sm font-semibold text-[#D6E7E8]">
+        Administrator name
+        <input
+          name="adminName"
+          required
+          minLength={2}
+          maxLength={120}
+          className="mt-2 h-11 w-full rounded-lg border border-[#1A4250] bg-[#10303A] px-3 text-base outline-none"
+          placeholder="Fictional Lab Administrator"
+        />
+      </label>
+      <label className="text-sm font-semibold text-[#D6E7E8]">
+        Administrator email
+        <input
+          name="adminEmail"
+          type="email"
+          required
+          className="mt-2 h-11 w-full rounded-lg border border-[#1A4250] bg-[#10303A] px-3 text-base outline-none"
+          placeholder="lab-admin@example.com"
+        />
+      </label>
       <button
         type="submit"
         disabled={isPending}
