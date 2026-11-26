@@ -1,3 +1,23 @@
+import Link from "next/link";
+
 export default function ResetPasswordPage() {
-  return <main className="flex min-h-screen items-center justify-center bg-[#F6F9FA] px-5"><form className="card w-full max-w-md rounded-2xl p-8"><h1 className="font-heading text-2xl font-bold">Choose a new password</h1><p className="mt-2 text-sm text-[#4A5A60]">Use at least 12 characters with a number and symbol.</p><label className="mt-6 block text-sm font-semibold">New password<input type="password" autoComplete="new-password" required className="mt-2 h-11 w-full rounded-lg border border-[#DCE6E8] px-3" /></label><label className="mt-4 block text-sm font-semibold">Confirm password<input type="password" autoComplete="new-password" required className="mt-2 h-11 w-full rounded-lg border border-[#DCE6E8] px-3" /></label><button className="brand-gradient mt-5 h-11 w-full rounded-lg text-sm font-bold text-[#04222A]">Update password</button></form></main>;
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-[#F6F9FA] px-5">
+      <section className="card w-full max-w-md rounded-2xl p-8">
+        <h1 className="font-heading text-2xl font-bold">
+          Password reset is not connected yet
+        </h1>
+        <p className="mt-3 text-sm text-[#4A5A60]">
+          Contact your laboratory administrator for help recovering your
+          account.
+        </p>
+        <Link
+          href="/login"
+          className="mt-6 block text-center text-sm font-bold text-[#0A7490]"
+        >
+          Back to sign in
+        </Link>
+      </section>
+    </main>
+  );
 }

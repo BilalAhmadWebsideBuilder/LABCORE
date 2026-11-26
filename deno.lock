@@ -1,0 +1,37 @@
+{
+  "version": "5",
+  "redirects": {
+    "https://esm.sh/@supabase/supabase-js@2": "https://esm.sh/@supabase/supabase-js@2.119.2"
+  },
+  "remote": {
+    "https://esm.sh/@supabase/supabase-js@2.119.2": "e7729dec88af13b1d17953717407c06705450383f619c26efa6d542b8f73f8c3"
+  },
+  "workspace": {
+    "packageJson": {
+      "dependencies": [
+        "npm:@hookform/resolvers@^7.0.8",
+        "npm:@supabase/ssr@~0.12.7",
+        "npm:@supabase/supabase-js@^2.119.2",
+        "npm:@tailwindcss/turbopack@4.3.3",
+        "npm:@types/node@20",
+        "npm:@types/react-dom@19",
+        "npm:@types/react@19",
+        "npm:date-fns-tz@^3.2.0",
+        "npm:date-fns@^4.4.0",
+        "npm:eslint-config-next@16.4.6",
+        "npm:eslint@9",
+        "npm:framer-motion@^14.14.0",
+        "npm:lucide-react@^1.78.0",
+        "npm:next@16.4.6",
+        "npm:qrcode@^1.5.4",
+        "npm:react-dom@19.3.0",
+        "npm:react-hook-form@^7.92.0",
+        "npm:react@19.3.0",
+        "npm:recharts@^3.11.0",
+        "npm:tailwindcss@4.3.3",
+        "npm:typescript@5",
+        "npm:zod@^4.6.7"
+      ]
+    }
+  }
+}

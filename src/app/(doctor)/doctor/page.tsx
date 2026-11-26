@@ -1,6 +1,13 @@
 import { AlertCircle, CheckCircle2, Clock3 } from "lucide-react";
+import { signOut } from "@/app/actions/auth";
+import { PrototypeNotice } from "@/components/PrototypeNotice";
+import { requireMembership } from "@/lib/auth/authorization";
 
-export default function DoctorDashboard() {
+export const instant = false;
+
+export default async function DoctorDashboard() {
+  await requireMembership(["reporting_doctor"]);
+
   const cases = [
     ["LN-2026-000123","Ayesha Khan","CBC","Overdue","text-[#DC2626]","bg-[#DC2626]/10"],
     ["LN-2026-000124","Muhammad Ali","Lipid Profile","Due today","text-[#D97706]","bg-[#D97706]/10"],
@@ -8,7 +15,12 @@ export default function DoctorDashboard() {
   ];
   return (
     <main className="min-h-screen bg-[#F6F9FA] p-4 text-[#0A1A1F] lg:p-8">
-      <div className="mx-auto max-w-6xl"><h1 className="font-heading text-3xl font-bold">Review queue</h1><p className="mt-2 text-sm text-[#4A5A60]">Cases assigned to you</p>
+      <div className="mx-auto max-w-6xl">
+      <header className="flex items-start justify-between gap-4">
+        <div><h1 className="font-heading text-3xl font-bold">Review queue</h1><p className="mt-2 text-sm text-[#4A5A60]">Cases assigned to you</p></div>
+        <form action={signOut}><button className="h-11 rounded-lg border border-[#DCE6E8] bg-white px-4 text-sm font-bold">Sign out</button></form>
+      </header>
+      <PrototypeNotice />
       <div className="mt-6 grid gap-3 sm:grid-cols-3">
         {[["Assigned","18",AlertCircle],["Overdue","3",Clock3],["Approved today","7",CheckCircle2]].map(([label,value,Icon]) => {
           const IconComponent = Icon as typeof AlertCircle;
