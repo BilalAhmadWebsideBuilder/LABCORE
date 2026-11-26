@@ -10,6 +10,7 @@
 - Replaced placeholder forgot/reset password screens with Supabase Auth reset-link and password-update flows.
 - Added tenant-scoped low-stock reagents to the dashboard and workspace notification menu.
 - Updated PWA branding to reuse the existing tracked LabCore SVG and documented migration 016.
+- Expanded the pgTAP tenant suite to 14 assertions, including staff read/write isolation in both laboratory directions and patient published-report isolation.
 
 ## Current validation
 
@@ -20,9 +21,9 @@
 
 ## Remaining
 
-1. Run Docker/local Supabase and execute pgTAP tenant-isolation tests.
+1. Run Docker/local Supabase and execute the expanded 14-assertion pgTAP tenant-isolation tests.
 2. Complete final route smoke review and visual consistency checks while preserving the existing logo.
 3. Run the final lint, typecheck, build, test attempt, secret scan, and Git status review.
-4. Push `main` to `origin` and report the commit link plus setup decisions.
+4. Commit and push the final test/documentation updates to `main`.
 
 No existing migration has been edited. Any required schema changes start at `202611260016`.

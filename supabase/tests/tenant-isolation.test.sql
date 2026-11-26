@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 set local search_path = public, extensions;
-select plan(10);
+select plan(14);
 
 do $$
 declare
@@ -126,6 +126,67 @@ select is(
   (select count(*)::integer from public.patients
    where id = current_setting('labcore_test.patient_b')::uuid),
   0, 'Lab A staff cannot read Lab B patient data'
+);
+select throws_ok(
+  $sql$
+    insert into public.patients(id, lab_id, patient_code, full_name)
+    values (
+      gen_random_uuid(),
+      current_setting('labcore_test.lab_b')::uuid,
+      'FORBIDDEN-' || left(replace(current_setting('labcore_test.run_id'), '-', ''), 12),
+      'Forbidden Cross-Tenant Patient'
+    )
+  $sql$,
+  '42501',
+  null,
+  'Lab A staff cannot insert a patient into Lab B'
+);
+select throws_ok(
+  $sql$
+    insert into public.report_results(
+      id, lab_id, patient_id, order_item_id, result_text, status, published_at
+    )
+    values (
+      gen_random_uuid(),
+      current_setting('labcore_test.lab_b')::uuid,
+      current_setting('labcore_test.patient_b')::uuid,
+      current_setting('labcore_test.order_b')::uuid,
+      'Forbidden cross-tenant report',
+      'published',
+      now()
+    )
+  $sql$,
+  '42501',
+  null,
+  'Lab A staff cannot insert a report into Lab B'
+);
+
+do $$
+begin
+  perform set_config('request.jwt.claim.sub', current_setting('labcore_test.staff_b'), true);
+  perform set_config('request.jwt.claims',
+    jsonb_build_object('sub', current_setting('labcore_test.staff_b'), 'role', 'authenticated')::text, true);
+end;
+$$;
+
+select is(
+  (select count(*)::integer from public.patients
+   where id = current_setting('labcore_test.patient_a')::uuid),
+  0, 'Lab B staff cannot read Lab A patient data'
+);
+select throws_ok(
+  $sql$
+    insert into public.patients(id, lab_id, patient_code, full_name)
+    values (
+      gen_random_uuid(),
+      current_setting('labcore_test.lab_a')::uuid,
+      'FORBIDDEN-' || left(replace(current_setting('labcore_test.run_id'), '-', ''), 12),
+      'Forbidden Reverse-Tenant Patient'
+    )
+  $sql$,
+  '42501',
+  null,
+  'Lab B staff cannot insert a patient into Lab A'
 );
 
 do $$

@@ -22,8 +22,8 @@ In the Supabase dashboard, select the project you intend to use and open **SQL E
 14. Run `supabase/migrations/202611260014_report_upload_scanning.sql`.
 15. Run `supabase/migrations/202611260015_retention_and_maintenance.sql`.
 16. Run `supabase/migrations/202611260016_lab_onboarding.sql`.
-16. For a development project only, run `supabase/seed.sql`.
-17. Run `supabase/tests/schema_smoke.sql`; it raises an error if core tables, RLS, booking exclusions, permission grants, audit hooks, or case-scoped report and Storage policies are missing.
+17. For a development project only, run `supabase/seed.sql`.
+18. Run `supabase/tests/schema_smoke.sql`; it raises an error if core tables, RLS, booking exclusions, permission grants, audit hooks, or case-scoped report and Storage policies are missing.
 
 Run each migration as one script, in order, and do not rerun migrations that have already been applied. Migrations `006`–`015` extend the existing schema; they do not replace the earlier foundation or patient registration migrations. Do not apply the seed to staging or production. The seed contains synthetic patients and deliberately does not create login credentials.
 
