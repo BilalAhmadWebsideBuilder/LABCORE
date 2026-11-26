@@ -35,17 +35,20 @@ export default async function LabWorkspaceLayout({
     { data: lab, error: labError },
     { data: profile, error: profileError },
     { data: pageGrantRows, error: pageGrantError },
+    { data: stockRows, error: stockError },
   ] =
     await Promise.all([
       supabase.from("labs").select("name").eq("id", membership.labId).maybeSingle(),
       supabase.from("profiles").select("full_name").eq("id", membership.userId).maybeSingle(),
       supabase.from("page_grants").select("page_key").eq("lab_id", membership.labId).eq("user_id", membership.userId),
+      supabase.from("reagent_stock").select("name, quantity, reorder_level").eq("lab_id", membership.labId).is("deleted_at", null).limit(100),
     ]);
 
   const setupMessage =
     (labError && getDatabaseSetupMessage(labError)) ||
     (profileError && getDatabaseSetupMessage(profileError)) ||
-    (pageGrantError && getDatabaseSetupMessage(pageGrantError));
+    (pageGrantError && getDatabaseSetupMessage(pageGrantError)) ||
+    (stockError && getDatabaseSetupMessage(stockError));
 
   if (labError && !getDatabaseSetupMessage(labError)) {
     throw new Error(`Could not load laboratory workspace: ${labError.message}`);
@@ -56,9 +59,20 @@ export default async function LabWorkspaceLayout({
   if (pageGrantError && !getDatabaseSetupMessage(pageGrantError)) {
     throw new Error(`Could not load workspace permissions: ${pageGrantError.message}`);
   }
+  if (stockError && !getDatabaseSetupMessage(stockError)) {
+    throw new Error(`Could not load stock alerts: ${stockError.message}`);
+  }
 
   const grantedPages = pageGrantRows?.map((row) => row.page_key) ??
     fallbackPageGrants[membership.role] ?? ["dashboard", "help"];
+  const stockAlerts = (stockRows ?? [])
+    .filter((row) => Number(row.quantity) <= Number(row.reorder_level))
+    .map((row) => ({
+      name: row.name,
+      quantity: Number(row.quantity),
+      reorderLevel: Number(row.reorder_level),
+    }))
+    .slice(0, 5);
 
   return (
     <WorkspaceShell
@@ -66,6 +80,7 @@ export default async function LabWorkspaceLayout({
       userName={profile?.full_name?.trim() || "Lab staff"}
       roleLabel={STAFF_ROLE_LABELS[membership.role] ?? "Laboratory staff"}
       grantedPages={grantedPages}
+      stockAlerts={grantedPages.includes("reagent_stock") ? stockAlerts : []}
     >
       {setupMessage && <DatabaseSetupNotice message={setupMessage} />}
       {children}

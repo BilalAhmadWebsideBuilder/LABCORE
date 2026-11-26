@@ -1,4 +1,4 @@
-import { ArrowRight, Users } from "lucide-react";
+import { ArrowRight, Package, Users } from "lucide-react";
 import Link from "next/link";
 import { requireMembership } from "@/lib/auth/authorization";
 import { LAB_DASHBOARD_ROLES } from "@/lib/auth/roles";
@@ -59,6 +59,7 @@ export default async function LabDashboard() {
   }
 
   let patientCount: number | null = null;
+  let lowStockCount: number | null = null;
   if (canReadPatients) {
     const { count, error } = await supabase
       .from("patients")
@@ -77,6 +78,31 @@ export default async function LabDashboard() {
       );
     }
     patientCount = count ?? 0;
+  }
+
+  const { data: canReadInventory, error: inventoryPermissionError } =
+    await supabase.rpc("has_lab_permission", {
+      target_lab: membership.labId,
+      target_permission: "inventory.read",
+    });
+  if (inventoryPermissionError) {
+    const setupMessage = getDatabaseSetupMessage(inventoryPermissionError);
+    if (setupMessage) return <DatabaseSetupNotice message={setupMessage} />;
+  } else if (canReadInventory) {
+    const { data: inventory, error: inventoryError } = await supabase
+      .from("reagent_stock")
+      .select("quantity, reorder_level")
+      .eq("lab_id", membership.labId)
+      .is("deleted_at", null)
+      .limit(500);
+    if (inventoryError) {
+      const setupMessage = getDatabaseSetupMessage(inventoryError);
+      if (setupMessage) return <DatabaseSetupNotice message={setupMessage} />;
+    } else {
+      lowStockCount = (inventory ?? []).filter(
+        (row) => Number(row.quantity) <= Number(row.reorder_level),
+      ).length;
+    }
   }
 
   return (
@@ -98,6 +124,14 @@ export default async function LabDashboard() {
           <strong>{patientCount === null ? "Restricted" : patientCount.toLocaleString()}</strong>
           <span>{patientCount === null ? "Not available for your role" : "In this laboratory"}</span>
         </article>
+        {lowStockCount !== null && (
+          <article className="workspace-stat-card">
+            <span className="workspace-stat-icon"><Package size={18} /></span>
+            <p>Low-stock reagents</p>
+            <strong>{lowStockCount.toLocaleString()}</strong>
+            <span>At or below reorder level</span>
+          </article>
+        )}
       </section>
 
       <section className="workspace-card workspace-next-step">

@@ -34,6 +34,7 @@ type WorkspaceShellProps = {
   userName: string;
   roleLabel: string;
   grantedPages: string[];
+  stockAlerts: { name: string; quantity: number; reorderLevel: number }[];
 };
 
 const navigation = [
@@ -86,6 +87,7 @@ export function WorkspaceShell({
   userName,
   roleLabel,
   grantedPages,
+  stockAlerts,
 }: WorkspaceShellProps) {
   const pathname = usePathname();
   const mobileViewportMatch = useSyncExternalStore(subscribeToViewport, getMobileViewport, () => false);
@@ -210,7 +212,15 @@ export function WorkspaceShell({
               {notificationsOpen && (
                 <div className="workspace-menu workspace-notifications">
                   <strong>Notifications</strong>
-                  <p>Live alerts are not connected yet.</p>
+                  {stockAlerts.length === 0 ? (
+                    <p>No low-stock alerts.</p>
+                  ) : (
+                    stockAlerts.map((alert) => (
+                      <p key={`${alert.name}-${alert.quantity}-${alert.reorderLevel}`}>
+                        <strong>{alert.name}</strong>: {alert.quantity} remaining; reorder at {alert.reorderLevel}.
+                      </p>
+                    ))
+                  )}
                 </div>
               )}
             </div>

@@ -8,6 +8,7 @@
 - Made the dashboard show a clear setup/error state instead of throwing on database access failures, and enforce the dashboard page grant.
 - Added an optional isolated Next.js build directory so production builds can be checked without sharing the running development server's `.next` directory.
 - Replaced placeholder forgot/reset password screens with Supabase Auth reset-link and password-update flows.
+- Added tenant-scoped low-stock reagents to the dashboard and workspace notification menu.
 
 ## Current validation
 
