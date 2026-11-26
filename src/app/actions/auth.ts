@@ -10,6 +10,11 @@ export type SignInState = {
   error: string | null;
 };
 
+export type PasswordActionState = {
+  error: string | null;
+  success: string | null;
+};
+
 async function rejectSignIn(
   supabase: SupabaseClient,
   message: string,
@@ -141,6 +146,92 @@ export async function patientSignIn(
   }
 
   redirect("/portal");
+}
+
+export async function requestPasswordReset(
+  _previousState: PasswordActionState,
+  formData: FormData,
+): Promise<PasswordActionState> {
+  if (!getSupabaseEnvironment()) {
+    return {
+      error: "Supabase is not configured. Add its project URL and publishable or anon key, then restart the app.",
+      success: null,
+    };
+  }
+
+  const emailValue = formData.get("email");
+  const email = typeof emailValue === "string" ? emailValue.trim() : "";
+  if (!email.includes("@")) {
+    return { error: "Enter a valid email address.", success: null };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ??
+    "http://localhost:3000";
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${siteUrl}/auth/callback?next=/reset-password`,
+  });
+
+  if (error) {
+    return {
+      error: "We could not start password recovery. Try again later or contact your administrator.",
+      success: null,
+    };
+  }
+
+  return {
+    error: null,
+    success: "If this email is registered, a password-reset link has been sent.",
+  };
+}
+
+export async function updatePassword(
+  _previousState: PasswordActionState,
+  formData: FormData,
+): Promise<PasswordActionState> {
+  if (!getSupabaseEnvironment()) {
+    return {
+      error: "Supabase is not configured. Add its project URL and publishable or anon key, then restart the app.",
+      success: null,
+    };
+  }
+
+  const password = formData.get("password");
+  const confirmation = formData.get("confirmation");
+  if (
+    typeof password !== "string" ||
+    typeof confirmation !== "string" ||
+    password.length < 8
+  ) {
+    return { error: "Use a password with at least 8 characters.", success: null };
+  }
+  if (password !== confirmation) {
+    return { error: "Password confirmation does not match.", success: null };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { data: claims, error: claimsError } = await supabase.auth.getClaims();
+  if (claimsError || typeof claims?.claims?.sub !== "string") {
+    return {
+      error: "This password-reset link is invalid or has expired. Request a new link.",
+      success: null,
+    };
+  }
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) {
+    return {
+      error: "We could not update the password. Request a new reset link and try again.",
+      success: null,
+    };
+  }
+
+  await supabase.auth.signOut();
+  return {
+    error: null,
+    success: "Password updated. You can now sign in with the new password.",
+  };
 }
 
 export async function signOut() {
